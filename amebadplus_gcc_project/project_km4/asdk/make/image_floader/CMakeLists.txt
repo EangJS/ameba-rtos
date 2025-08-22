@@ -6,6 +6,8 @@ ameba_add_image(target_floader p_EXCLUDE_FROM_ALL)
 ameba_add_subdirectory(${c_CMPT_CRASHDUMP_DIR})
 ameba_add_subdirectory(${c_CMPT_CHIPINFO_DIR})
 ameba_add_subdirectory(${c_CMPT_SOC_DIR}/lib/bootloader lib_bootloader)
+ameba_add_subdirectory(${c_CMPT_GDB_FLOADER_DIR})
+ameba_add_subdirectory(${c_CMPT_SWLIB_DIR})
 
 ###############################  GENERATE IMAGE  ###################################
 #---------------- PRE LINK -------------------#
