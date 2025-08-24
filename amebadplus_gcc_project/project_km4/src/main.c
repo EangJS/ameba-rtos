@@ -14,6 +14,7 @@
 #include "rtw_coex_ipc.h"
 #endif
 #include "ameba_diagnose.h"
+#include "SEGGER_SYSVIEW.h"
 
 static const char *const TAG = "MAIN";
 
@@ -179,6 +180,10 @@ _WEAK void app_example(void)
 int main(void)
 {
 	RTK_LOGI(TAG, "KM4 MAIN \n");
+
+    SEGGER_SYSVIEW_Conf();
+    SEGGER_SYSVIEW_Start();
+
 	ameba_rtos_get_version();
 	/* Debug log control */
 	app_init_debug();

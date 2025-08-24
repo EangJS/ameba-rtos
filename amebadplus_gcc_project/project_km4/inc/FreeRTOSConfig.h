@@ -155,13 +155,14 @@ extern uint32_t ulPortCheckHeapIntegrity(int COMPREHENSIVE_CHECK);
 #define INCLUDE_vTaskDelay								1
 #define INCLUDE_pcTaskGetTaskName       				1
 #define INCLUDE_uxTaskGetStackHighWaterMark				0
-#define INCLUDE_xTaskGetIdleTaskHandle					0
+#define INCLUDE_xTaskGetIdleTaskHandle					1
 #define INCLUDE_eTaskGetState							1
 #define INCLUDE_xTaskResumeFromISR						0
 #define INCLUDE_xTaskGetCurrentTaskHandle				1
 #define INCLUDE_xTaskGetSchedulerState					0
 #define INCLUDE_xSemaphoreGetMutexHolder				1
 #define INCLUDE_xTimerPendFunctionCall					1
+#define INCLUDE_pxTaskGetStackStart						1
 
 /* This demo makes use of one or more example stats formatting functions.  These
  * format the raw data provided by the uxTaskGetSystemState() function in to
@@ -261,3 +262,5 @@ extern void TaskExitError(void);
 #define configTASK_RETURN_ADDRESS TaskExitError
 
 #endif /* FREERTOS_CONFIG_H */
+
+#include "SEGGER_SYSVIEW_FreeRTOS.h"
