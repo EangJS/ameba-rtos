@@ -95,7 +95,12 @@ Additional information:
 * TODO: Add your defines here.                                       *
 **********************************************************************
 */
+#include "SEGGER_SYSVIEW_heaptrace.h"
 
+#define SEGGER_SYSVIEW_GET_TIMESTAMP()    (*(volatile uint32_t *)(0xE000E014) - *(volatile uint32_t *)(0xE000E018))
+#define SEGGER_SYSVIEW_TIMESTAMP_FREQ     (SystemCoreClock)
+#define SEGGER_SYSVIEW_RTT_BUFFER_SIZE          2048
+#define SEGGER_SYSVIEW_GET_INTERRUPT_ID()    ((*(U32*)(0xE000ED04)) & 0x1FF)
 
 #endif  // SEGGER_SYSVIEW_CONF_H
 

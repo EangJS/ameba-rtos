@@ -11,7 +11,7 @@ set(public_libraries)               #public libraries(files), NOTE: linked with 
 # You may use if-else condition to set or update predefined variable above
 
 ameba_list_append(public_includes 
-    ${c_COMPONENT_DIR}/SEGGER
+    ${c_COMPONENT_DIR}/SEGGER/inc
     ${c_COMPONENT_DIR}/SEGGER/Config
 )
 
@@ -48,6 +48,7 @@ ameba_list_append(private_sources
     SEGGER_SYSVIEW.c
     Config/SEGGER_SYSVIEW_Config_FreeRTOS.c
     SEGGER_SYSVIEW_FreeRTOS.c
+    SEGGER_SYSVIEW_heaptrace.c
 )
 
 
