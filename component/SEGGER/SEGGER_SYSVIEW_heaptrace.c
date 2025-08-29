@@ -1,6 +1,5 @@
 #include "SEGGER_SYSVIEW_heaptrace.h"
 #include "SEGGER_SYSVIEW.h"
-#include "task.h"
 
 #ifdef SRAM_HEAP0_START
     static void* gHeapSRAM0 = NULL;
@@ -50,10 +49,8 @@ void HeapTrace_Init(void) {
 
 }
 
-void* HeapTrace_Malloc(size_t size)
+void HeapTrace_Malloc(void* ptr, size_t size)
 {
-    void* ptr = pvPortMalloc(size);
-
     if (ptr != NULL)
     {
         if ((uint8_t*)ptr >= (uint8_t*)gHeapSRAM0 && (uint8_t*)ptr < ((uint8_t*)gHeapSRAM0 + gHeapSRAM0Size))
@@ -65,8 +62,6 @@ void* HeapTrace_Malloc(size_t size)
             SEGGER_SYSVIEW_HeapAlloc(gHeapPSRAM0, ptr, size);
         }
     }
-
-    return ptr;
 }
 
 void HeapTrace_Free(void* ptr)
@@ -81,6 +76,5 @@ void HeapTrace_Free(void* ptr)
         {
             SEGGER_SYSVIEW_HeapFree(gHeapPSRAM0, ptr);
         }
-        vPortFree(ptr);
     }
 }

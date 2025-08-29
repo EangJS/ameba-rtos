@@ -1,7 +1,6 @@
 #ifndef HEAP_TRACE_H
 #define HEAP_TRACE_H
 #include "ameba.h"
-#include "FreeRTOS.h"
 #include <stddef.h>  // for size_t
 
 /**
@@ -17,13 +16,13 @@ void HeapTrace_Init(void);
  * @param size Number of bytes to allocate
  * @return void* Pointer to the allocated memory
  */
-void* HeapTrace_Malloc(size_t size);
+void HeapTrace_Malloc(void* ptr, size_t size);
 
 /**
  * @brief Free dynamically allocated memory and trace the deallocation with SEGGER SYSTEMVIEW
  * 
  * @param ptr Pointer to the memory to free
  */
-void  HeapTrace_Free(void* ptr);
+void HeapTrace_Free(void* ptr);
 
 #endif // HEAP_TRACE_H
