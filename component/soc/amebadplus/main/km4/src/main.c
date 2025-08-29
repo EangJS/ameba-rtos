@@ -16,6 +16,8 @@
 #endif
 #include "ameba_diagnose.h"
 #include "SEGGER_SYSVIEW.h"
+#include "SEGGER_RTT.h" 
+#include "FreeRTOS.h"
 
 static const char *const TAG = "MAIN";
 #define GPIO_SIGNAL_SOURCE		_PB_10
@@ -82,7 +84,8 @@ void raw_gpio_edge_irq_demo(void)
 	GPIO_INTConfig(GPIO_IRQ_EDGE_PIN, ENABLE);
 
 	while (1) {
-		void* ptr = HeapTrace_Malloc(1024);
+		void *ptr = NULL;
+		HeapTrace_Malloc(ptr, 1024);
 		GPIO_WriteBit(GPIO_SIGNAL_SOURCE, 1);
 		rtos_time_delay_ms(1000);
 
@@ -103,6 +106,19 @@ int example_raw_gpio_edge_irq(void)
 	// rtos_sched_start();
 	return 0;
 }
+#if defined(CONFIG_FTL_ENABLED) && CONFIG_FTL_ENABLED
+#include "ftl_int.h"
+
+void app_ftl_init(void)
+{
+	u32 ftl_start_addr, ftl_end_addr;
+
+	flash_get_layout_info(FTL, &ftl_start_addr, &ftl_end_addr);
+	ftl_phy_page_start_addr = ftl_start_addr - SPI_FLASH_BASE;
+	ftl_phy_page_num = (ftl_end_addr - ftl_start_addr + 1) / PAGE_SIZE_4K;
+	ftl_init(ftl_phy_page_start_addr, ftl_phy_page_num);
+}
+#endif
 
 #if (defined(CONFIG_BT) && CONFIG_BT) && (defined(CONFIG_BT_INIC) && CONFIG_BT_INIC)
 #include "bt_inic.h"
@@ -256,6 +272,22 @@ _WEAK void app_example(void)
 
 }
 
+void task_main( void* pv )
+{
+	UNUSED( pv );
+	u32 count = 0;
+	while ( 1 )
+	{
+		SEGGER_RTT_printf(0, "%d: Hello World from FreeRTOS running on KM4: %d\r\n", count++, xPortGetFreeHeapSize());
+		for ( uint16_t i = 0; i < 0xFFFF; i++ )
+		{
+			__NOP();
+		}
+		rtos_time_delay_ms( 2000 );	
+		RTK_LOGI(TAG, "OK\n");
+	}
+}
+
 //default main
 int main(void)
 {
@@ -263,7 +295,6 @@ int main(void)
 
     SEGGER_SYSVIEW_Conf();
     SEGGER_SYSVIEW_Start();
-	HeapTrace_Init();
 
 	ameba_rtos_get_version();
 	/* Debug log control */
@@ -321,7 +352,7 @@ int main(void)
 	app_example();
 	IPC_patch_function(&rtos_critical_enter, &rtos_critical_exit);
 	IPC_SEMDelay(rtos_time_delay_ms);
-	example_raw_gpio_edge_irq();
+	rtos_task_create(NULL, "TASK_MAIN", (rtos_task_t)task_main, (void *)NULL, (256 * 4), 1);
 
 
 	RTK_LOGI(TAG, "KM4 START SCHEDULER \n");
@@ -329,5 +360,4 @@ int main(void)
 	/* Enable Schedule, Start Kernel */
 	rtos_sched_start();
 }
-
 
