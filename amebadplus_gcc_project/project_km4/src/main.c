@@ -13,7 +13,6 @@
 #if defined(CONFIG_BT_COEXIST)
 #include "rtw_coex_ipc.h"
 #endif
-#include "ameba_diagnose.h"
 #include "SEGGER_SYSVIEW.h"
 #include "SEGGER_RTT.h" 
 #include "FreeRTOS.h"
@@ -23,6 +22,7 @@ static const char *const TAG = "MAIN";
 #define GPIO_IRQ_EDGE_PIN		_PA_12
 #include "device.h"
 #include <stdio.h>
+int example_raw_flash_read_write(void);
 
 IRQn_Type GPIO_IrqNum[2] = {GPIOA_IRQ, GPIOB_IRQ};
 u32 GPIO_RegBase[2] = {(u32)GPIOA_BASE, (u32)GPIOB_BASE};
@@ -296,8 +296,7 @@ void task_main( void* pv )
 		{
 			__NOP();
 		}
-		rtos_time_delay_ms( 2000 );	
-		RTK_LOGI(TAG, "OK\n");
+		rtos_time_delay_ms( 3 );	
 	}
 }
 
@@ -363,7 +362,9 @@ int main(void)
 	app_example();
 	IPC_patch_function(&rtos_critical_enter, &rtos_critical_exit);
 	IPC_SEMDelay(rtos_time_delay_ms);
-	rtos_task_create(NULL, "TASK_MAIN", (rtos_task_t)task_main, (void *)NULL, (256 * 4), 1);
+	rtos_task_create(NULL, "TASK_MAIN", (rtos_task_t)task_main, (void *)NULL, (256 * 4), 10);
+	example_raw_flash_read_write();
+
 
 
 	RTK_LOGI(TAG, "KM4 START SCHEDULER \n");

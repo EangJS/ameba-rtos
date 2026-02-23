@@ -4,6 +4,7 @@
 #if defined(CONFIG_BT_COEXIST)
 #include "rtw_coex_ipc.h"
 #endif
+#include "SEGGER_RTT.h"
 
 static const char *const TAG = "MAIN";
 
@@ -64,6 +65,18 @@ _WEAK void app_example(void)
 
 }
 
+static void km0_test_task(void *param)
+{
+	UNUSED(param);
+	uint32_t i = 0;
+	while (1) {
+		__NOP();
+		SEGGER_RTT_printf(0, "%d: Hello World from FreeRTOS running on KM0\r\n", i++);
+		rtos_time_delay_ms(1000);
+	}
+}
+
+
 //default main
 int main(void)
 {
@@ -112,6 +125,7 @@ int main(void)
 	IPC_SEMDelay(rtos_time_delay_ms);
 
 	RTK_LOGI(TAG, "KM0 OS START \n");
+	rtos_task_create(NULL, ((const char *)"km0_test_task"), km0_test_task, NULL, 1024, 1);
 
 	//Enable Schedule
 	rtos_sched_start();

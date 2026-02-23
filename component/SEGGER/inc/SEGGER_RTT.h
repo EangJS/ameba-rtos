@@ -247,7 +247,7 @@ Revision: $Rev: 25842 $
     #define _CORE_HAS_RTT_ASM_SUPPORT 0              // Default for unknown cores
   #endif
   #if (_CC_HAS_RTT_ASM_SUPPORT && _CORE_HAS_RTT_ASM_SUPPORT)
-    #define RTT_USE_ASM                           (1)
+    #define RTT_USE_ASM                           (0) // Intentionally disable ASM implementation for ease of compilation sake
   #else
     #define RTT_USE_ASM                           (0)
   #endif
@@ -375,33 +375,33 @@ extern SEGGER_RTT_CB _SEGGER_RTT;
 #ifdef __cplusplus
   extern "C" {
 #endif
-int          SEGGER_RTT_AllocDownBuffer         (const char* sName, void* pBuffer, unsigned BufferSize, unsigned Flags);
-int          SEGGER_RTT_AllocUpBuffer           (const char* sName, void* pBuffer, unsigned BufferSize, unsigned Flags);
-int          SEGGER_RTT_ConfigUpBuffer          (unsigned BufferIndex, const char* sName, void* pBuffer, unsigned BufferSize, unsigned Flags);
-int          SEGGER_RTT_ConfigDownBuffer        (unsigned BufferIndex, const char* sName, void* pBuffer, unsigned BufferSize, unsigned Flags);
-int          SEGGER_RTT_GetKey                  (void);
-unsigned     SEGGER_RTT_HasData                 (unsigned BufferIndex);
-int          SEGGER_RTT_HasKey                  (void);
-unsigned     SEGGER_RTT_HasDataUp               (unsigned BufferIndex);
-void         SEGGER_RTT_Init                    (void);
-unsigned     SEGGER_RTT_Read                    (unsigned BufferIndex,       void* pBuffer, unsigned BufferSize);
-unsigned     SEGGER_RTT_ReadNoLock              (unsigned BufferIndex,       void* pData,   unsigned BufferSize);
-int          SEGGER_RTT_SetNameDownBuffer       (unsigned BufferIndex, const char* sName);
-int          SEGGER_RTT_SetNameUpBuffer         (unsigned BufferIndex, const char* sName);
-int          SEGGER_RTT_SetFlagsDownBuffer      (unsigned BufferIndex, unsigned Flags);
-int          SEGGER_RTT_SetFlagsUpBuffer        (unsigned BufferIndex, unsigned Flags);
-int          SEGGER_RTT_WaitKey                 (void);
-unsigned     SEGGER_RTT_Write                   (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
-unsigned     SEGGER_RTT_WriteNoLock             (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
-unsigned     SEGGER_RTT_WriteSkipNoLock         (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
-unsigned     SEGGER_RTT_ASM_WriteSkipNoLock     (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
-unsigned     SEGGER_RTT_WriteString             (unsigned BufferIndex, const char* s);
-void         SEGGER_RTT_WriteWithOverwriteNoLock(unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
-unsigned     SEGGER_RTT_PutChar                 (unsigned BufferIndex, char c);
-unsigned     SEGGER_RTT_PutCharSkip             (unsigned BufferIndex, char c);
-unsigned     SEGGER_RTT_PutCharSkipNoLock       (unsigned BufferIndex, char c);
-unsigned     SEGGER_RTT_GetAvailWriteSpace      (unsigned BufferIndex);
-unsigned     SEGGER_RTT_GetBytesInBuffer        (unsigned BufferIndex);
+__attribute__((long_call))  int          SEGGER_RTT_AllocDownBuffer         (const char* sName, void* pBuffer, unsigned BufferSize, unsigned Flags);
+__attribute__((long_call))  int          SEGGER_RTT_AllocUpBuffer           (const char* sName, void* pBuffer, unsigned BufferSize, unsigned Flags);
+__attribute__((long_call))  int          SEGGER_RTT_ConfigUpBuffer          (unsigned BufferIndex, const char* sName, void* pBuffer, unsigned BufferSize, unsigned Flags);
+__attribute__((long_call))  int          SEGGER_RTT_ConfigDownBuffer        (unsigned BufferIndex, const char* sName, void* pBuffer, unsigned BufferSize, unsigned Flags);
+__attribute__((long_call))  int          SEGGER_RTT_GetKey                  (void);
+__attribute__((long_call))  unsigned     SEGGER_RTT_HasData                 (unsigned BufferIndex);
+__attribute__((long_call))  int          SEGGER_RTT_HasKey                  (void);
+__attribute__((long_call))  unsigned     SEGGER_RTT_HasDataUp               (unsigned BufferIndex);
+__attribute__((long_call))  void         SEGGER_RTT_Init                    (void);
+__attribute__((long_call))  unsigned     SEGGER_RTT_Read                    (unsigned BufferIndex,       void* pBuffer, unsigned BufferSize);
+__attribute__((long_call))  unsigned     SEGGER_RTT_ReadNoLock              (unsigned BufferIndex,       void* pData,   unsigned BufferSize);
+__attribute__((long_call))  int          SEGGER_RTT_SetNameDownBuffer       (unsigned BufferIndex, const char* sName);
+__attribute__((long_call))  int          SEGGER_RTT_SetNameUpBuffer         (unsigned BufferIndex, const char* sName);
+__attribute__((long_call))  int          SEGGER_RTT_SetFlagsDownBuffer      (unsigned BufferIndex, unsigned Flags);
+__attribute__((long_call))  int          SEGGER_RTT_SetFlagsUpBuffer        (unsigned BufferIndex, unsigned Flags);
+__attribute__((long_call))  int          SEGGER_RTT_WaitKey                 (void);
+__attribute__((long_call))  unsigned     SEGGER_RTT_Write                   (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
+__attribute__((long_call))  unsigned     SEGGER_RTT_WriteNoLock             (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
+__attribute__((long_call))  unsigned     SEGGER_RTT_WriteSkipNoLock         (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
+__attribute__((long_call))  unsigned     SEGGER_RTT_ASM_WriteSkipNoLock     (unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
+__attribute__((long_call))  unsigned     SEGGER_RTT_WriteString             (unsigned BufferIndex, const char* s);
+__attribute__((long_call))  void         SEGGER_RTT_WriteWithOverwriteNoLock(unsigned BufferIndex, const void* pBuffer, unsigned NumBytes);
+__attribute__((long_call))  unsigned     SEGGER_RTT_PutChar                 (unsigned BufferIndex, char c);
+__attribute__((long_call))  unsigned     SEGGER_RTT_PutCharSkip             (unsigned BufferIndex, char c);
+__attribute__((long_call))  unsigned     SEGGER_RTT_PutCharSkipNoLock       (unsigned BufferIndex, char c);
+__attribute__((long_call))  unsigned     SEGGER_RTT_GetAvailWriteSpace      (unsigned BufferIndex);
+__attribute__((long_call))  unsigned     SEGGER_RTT_GetBytesInBuffer        (unsigned BufferIndex);
 //
 // Function macro for performance optimization
 //
@@ -439,8 +439,8 @@ int     SEGGER_RTT_TerminalOut        (unsigned char TerminalId, const char* s);
 *
 **********************************************************************
 */
-int SEGGER_RTT_printf(unsigned BufferIndex, const char * sFormat, ...);
-int SEGGER_RTT_vprintf(unsigned BufferIndex, const char * sFormat, va_list * pParamList);
+__attribute__((long_call)) int SEGGER_RTT_printf(unsigned BufferIndex, const char * sFormat, ...);
+__attribute__((long_call)) int SEGGER_RTT_vprintf(unsigned BufferIndex, const char * sFormat, va_list * pParamList);
 
 #ifdef __cplusplus
   }

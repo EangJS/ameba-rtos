@@ -20,6 +20,7 @@ ameba_add_subdirectory(${c_CMPT_LWIP_DIR})
 ameba_add_subdirectory_if_exist(${c_CMPT_SOC_DIR}/verification)
 ameba_add_subdirectory(${c_CMPT_SWLIB_DIR})
 ameba_add_subdirectory(${c_CMPT_USRCFG_DIR})
+ameba_add_subdirectory(${c_CMPT_SEGGER_DIR})
 
 ameba_add_subdirectory(${c_CMPT_WIFI_DIR})
 ameba_add_subdirectory(${c_CMPT_WIFI_DIR}/wifi_fw)

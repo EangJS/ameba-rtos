@@ -253,3 +253,5 @@ extern void TaskExitError(void);
 
 #endif /* FREERTOS_CONFIG_H */
 
+#include "SEGGER_SYSVIEW_FreeRTOS.h"
+

@@ -49,6 +49,9 @@ SECTIONS
 		__sram_image2_start__ = .;
 		*(.sram.only.text*)
 		SRAM_INPUT_TEXT_SECTION
+		*SEGGER_RTT.o(.text*)
+		*SEGGER_RTT_printf.o(.text*)
+		*SEGGER_RTT_*.o(.text*)
 		__sram_image2_end__ = .;
 		. = ALIGN(32);
 	} > KM4_BD_RAM
@@ -65,6 +68,9 @@ SECTIONS
 		__image2_backtrace_start__ = .;
 
 		*(.timesensitive.text*)
+
+		EXCLUDE_FILE (*SEGGER_RTT.o *SEGGER_RTT_printf.o)
+
 
 		*(.text*)
 		*(.rodata*)
