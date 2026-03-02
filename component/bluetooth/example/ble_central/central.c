@@ -707,6 +707,10 @@ static rtk_bt_evt_cb_ret_t ble_central_gattc_app_callback(uint8_t event, void *d
 		if (p_gatt_mtu_ind->result == RTK_BT_OK) {
 			BT_LOGA("[APP] GATTC mtu exchange success, mtu_size: %d, conn_handle: %d \r\n",
 					p_gatt_mtu_ind->mtu_size, p_gatt_mtu_ind->conn_handle);
+			simple_ble_client_attach_conn(p_gatt_mtu_ind->conn_handle);
+			rtk_bt_le_sm_start_security(p_gatt_mtu_ind->conn_handle);
+			simple_ble_client_srv_discover(p_gatt_mtu_ind->conn_handle);
+			
 		} else {
 			BT_LOGE("[APP] GATTC mtu exchange fail \r\n");
 		}

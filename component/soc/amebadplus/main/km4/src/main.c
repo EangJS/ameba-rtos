@@ -22,6 +22,8 @@ static const char *const TAG = "MAIN";
 #include "bt_inic.h"
 #endif
 
+int ble_central_main(uint8_t enable);
+
 void app_init_debug(void)
 {
 	u32 debug[LEVEL_NUMs];
@@ -170,6 +172,102 @@ _WEAK void app_example(void)
 
 }
 
+#define GPIO_SIGNAL_SOURCE		_PB_10
+
+// void my_gpio_init(void)
+// {
+// 	GPIO_InitTypeDef GPIO_InitStruct_Source;
+
+// 	printf("example_raw_gpio_level_irq \n");
+
+
+
+// 	/* init gpio source pin */
+// 	GPIO_InitStruct_Source.GPIO_Pin = GPIO_SIGNAL_SOURCE;
+// 	GPIO_InitStruct_Source.GPIO_Mode = GPIO_Mode_OUT;
+// 	GPIO_Init(&GPIO_InitStruct_Source);
+
+// 	// while (1) {
+// 	// 	GPIO_WriteBit(GPIO_SIGNAL_SOURCE, 1);
+// 	// 	rtos_time_delay_ms(1000);
+
+// 	// 	GPIO_WriteBit(GPIO_SIGNAL_SOURCE, 0);
+// 	// 	rtos_time_delay_ms(1000);
+// 	// }
+// }
+#include "device.h"
+#include "platform_autoconf.h"
+
+#define PWM_TIMER		8
+#define PWM_PRESCALER	39
+#define PWM_PERIOD		20000
+#define PWM_STEP		(PWM_PERIOD / 200)  //Brightness change speed
+#define PWM_CHANNEL_MAX		8
+int pwms[PWM_CHANNEL_MAX] = {0, PWM_PERIOD / 8, PWM_PERIOD / 4, PWM_PERIOD / 8 * 3, PWM_PERIOD / 2, PWM_PERIOD / 8 * 5, \
+							 PWM_PERIOD / 4 * 3, PWM_PERIOD / 8 * 7
+							};
+int steps[PWM_CHANNEL_MAX] = {PWM_STEP, PWM_STEP, PWM_STEP, PWM_STEP, PWM_STEP, PWM_STEP, PWM_STEP, PWM_STEP};
+void raw_pwm_demo(void)
+{
+	RTIM_TimeBaseInitTypeDef RTIM_InitStruct;
+	TIM_CCInitTypeDef TIM_CCInitStruct;
+	/* close swdclk/swdio*/
+	Pinmux_Swdoff();
+	/* Enable TIM_PWM function & clock */
+	RCC_PeriphClockCmd(APBPeriph_TIMx[PWM_TIMER], APBPeriph_TIMx_CLOCK[PWM_TIMER], ENABLE);
+
+	RTIM_TimeBaseStructInit(&RTIM_InitStruct);
+	RTIM_InitStruct.TIM_Idx = PWM_TIMER;
+	RTIM_InitStruct.TIM_Prescaler = PWM_PRESCALER;
+	RTIM_InitStruct.TIM_Period = PWM_PERIOD - 1;
+	RTIM_TimeBaseInit(TIMx[PWM_TIMER], (&RTIM_InitStruct), TIMx_irq[PWM_TIMER], NULL, NULL);
+
+	for (int i = 0; i < 2; i++) {
+		RTIM_CCStructInit(&TIM_CCInitStruct);
+		TIM_CCInitStruct.TIM_OCPulse = pwms[i];
+		RTIM_CCxInit(TIMx[PWM_TIMER], &TIM_CCInitStruct, i);
+		RTIM_CCxCmd(TIMx[PWM_TIMER], i, TIM_CCx_Enable);
+	}
+	Pinmux_Config(_PB_18, (PINMUX_FUNCTION_PWM0 + 0));
+	Pinmux_Config(_PB_10, (PINMUX_FUNCTION_PWM0 + 1));
+
+	RTIM_Cmd(TIMx[PWM_TIMER], ENABLE);
+}
+#include <rtk_bt_def.h>
+#include <rtk_bt_common.h>
+#include <rtk_bt_le_gap.h>
+#include <bt_utils.h>
+static rtk_bt_le_create_conn_param_t conn_param = {
+	.peer_addr = {
+		.type = (rtk_bt_le_addr_type_t)1,
+		.addr_val = {0},
+	},
+	.scan_interval = 0x60,
+	.scan_window = 0x30,
+	.filter_policy = RTK_BT_LE_CONN_FILTER_WITHOUT_WHITELIST,
+	.conn_interval_max = 0x60,
+	.conn_interval_min = 0x60,
+	.conn_latency      = 0,
+	.supv_timeout      = 0x100,
+	.scan_timeout      = 1000,
+};
+
+void main_task(void *param)
+{
+	UNUSED(param);
+	ble_central_main(1);
+	// int argc = 3;
+	// char *argv[] = {"conn", "1", "d8c2822d6ff1"};
+	// atcmd_ble_gap_connect(argc, argv);
+
+	hexdata_str_to_bd_addr("d8c2822d6ff1", conn_param.peer_addr.addr_val, 6);
+	rtk_bt_le_gap_connect(&conn_param);
+	while (1) 
+	{
+		rtos_time_delay_ms(1000);
+	}
+}
+
 //default main
 int main(void)
 {
@@ -227,6 +325,8 @@ int main(void)
 	rtk_diag_init(RTK_DIAG_HEAP_SIZE, RTK_DIAG_SEND_BUFFER_SIZE);
 
 	/* Execute application example */
+	raw_pwm_demo();
+	rtos_task_create(NULL, ((const char *)"main_task"), main_task, NULL, 8192, 5);
 	app_example();
 	IPC_patch_function(&rtos_critical_enter, &rtos_critical_exit);
 	IPC_SEMDelay(rtos_time_delay_ms);

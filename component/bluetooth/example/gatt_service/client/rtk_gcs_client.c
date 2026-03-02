@@ -148,6 +148,16 @@ void general_client_discover_res_hdl(void *data)
 				disc_res->profile_id, disc_res->conn_handle, disc_res->type);
 		BT_AT_PRINT("+BLEGATTC:disc,%d,%d,%d\r\n",
 					disc_status, disc_res->conn_handle, disc_res->type);
+		rtk_bt_gattc_write_param_t write_param = {0};
+		write_param.conn_handle = 16;
+		write_param.profile_id = GCS_CLIENT_PROFILE_ID;
+		write_param.type = 1;
+		write_param.handle = 41;
+		write_param.length = 2;
+		write_param.data = (void *)osif_mem_alloc(RAM_TYPE_DATA_ON, write_param.length);
+		((uint8_t *)write_param.data)[0] = 0x01;
+		((uint8_t *)write_param.data)[1] = 0x00;
+		rtk_bt_gattc_write(&write_param);					
 		return;
 	} else {
 		BT_LOGE("[APP] GATTC discover failed! profile_id: %d, conn_handle: %d, type: %d, err: 0x%x\r\n",
@@ -243,6 +253,8 @@ void general_client_write_res_hdl(void *data)
 		return;
 	}
 }
+#include "gpio_api.h"
+uint16_t pwm_value = 0;
 
 void general_client_notify_hdl(void *data)
 {
@@ -255,6 +267,27 @@ void general_client_notify_hdl(void *data)
 	BT_LOGA("[APP] GATTC notify received, profile_id: %d, conn_handle: %d, handle: 0x%x\r\n",
 			ntf_ind->profile_id, ntf_ind->conn_handle, ntf_ind->value_handle);
 	BT_DUMPA("[APP] GATTC notify event:\r\n", ntf_ind->value, ntf_ind->len);
+	uint16_t left_pwm = 0;
+	uint16_t right_pwm = 0;
+
+	if (ntf_ind->value[0] == 0x01) {
+		left_pwm = (pwm_value * 2 > 20000) ? 20000 : (pwm_value * 2);
+	} else if (ntf_ind->value[0] == 0x02) {
+		right_pwm = (pwm_value * 2 > 20000) ? 20000 : (pwm_value * 2);
+	} else if (ntf_ind->value[0] == 0x03) {
+		left_pwm = pwm_value;
+		right_pwm = pwm_value;
+	}
+	else if (ntf_ind->value[5] == 0x01) {
+		pwm_value += pwm_value < 20000 ? 1000 : 0;
+	} else if (ntf_ind->value[5] == 0xff) {
+		pwm_value -= pwm_value > 0 ? 1000 : 0;
+	}
+	RTIM_CCRxSet(TIMx[8], left_pwm, 0);
+	RTIM_CCRxSet(TIMx[8], right_pwm, 1);
+
+	printf("pwm_value: %d\r\n", pwm_value);
+
 	BT_AT_PRINT("+BLEGATTC:notify,%d,0x%x",
 				ntf_ind->conn_handle, ntf_ind->value_handle);
 	BT_AT_DUMP("", ntf_ind->value, ntf_ind->len);

@@ -18,11 +18,11 @@
 #include <rtk_simple_ble_client.h>
 #include <bt_utils.h>
 
-#define SIMPLE_BLE_UUID_SRV                 0xA00A
-#define SIMPLE_BLE_UUID_CHAR_VAL_READ       0xB001
-#define SIMPLE_BLE_UUID_CHAR_VAL_WRITE      0xB002
-#define SIMPLE_BLE_UUID_CHAR_VAL_NOTIFY     0xB003
-#define SIMPLE_BLE_UUID_CHAR_VAL_INDICATE   0xB004
+#define HID_UUID_SRV                0x1812
+#define SIMPLE_BLE_UUID_CHAR_VAL_READ       0x2A4B
+#define SIMPLE_BLE_UUID_CHAR_VAL_WRITE      0x2A4C
+#define SIMPLE_BLE_UUID_CHAR_VAL_NOTIFY     0x2A4D
+#define SIMPLE_BLE_UUID_CHAR_VAL_INDICATE   0x2A4E
 
 #if defined(RTK_BLE_MGR_LIB) && RTK_BLE_MGR_LIB
 rtk_bt_gattc_uuid_t simple_ble_uuid = {
@@ -715,7 +715,7 @@ uint16_t simple_ble_client_delete(void)
 uint16_t simple_ble_client_srv_discover(uint16_t conn_handle)
 {
 	uint16_t ret = 0;
-	uint16_t simple_ble_uuid = SIMPLE_BLE_UUID_SRV;
+	uint16_t simple_ble_uuid = HID_UUID_SRV;
 	simple_ble_client_db_t *conn_simple_ble_db;
 	uint8_t conn_id;
 	rtk_bt_gattc_discover_param_t disc_param = {0};
