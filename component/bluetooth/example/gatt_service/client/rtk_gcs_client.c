@@ -254,8 +254,8 @@ void general_client_write_res_hdl(void *data)
 	}
 }
 #include "gpio_api.h"
-uint16_t pwm_value = 0;
-
+int16_t pwm_value = 0;
+uint8_t reverse_mode = 0;
 void general_client_notify_hdl(void *data)
 {
 	rtk_bt_gattc_cccd_value_ind_t *ntf_ind = (rtk_bt_gattc_cccd_value_ind_t *)data;
@@ -279,12 +279,41 @@ void general_client_notify_hdl(void *data)
 		right_pwm = pwm_value;
 	}
 	else if (ntf_ind->value[5] == 0x01) {
-		pwm_value += pwm_value < 20000 ? 1000 : 0;
+		if (pwm_value + 1000 > 0) {
+			reverse_mode = 0;
+		}
+		if ( reverse_mode ){
+			pwm_value -= pwm_value > 0 ? 1000 : 0;
+		}
+		else {
+			pwm_value += pwm_value < 20000 ? 1000 : 0;
+		}
+
 	} else if (ntf_ind->value[5] == 0xff) {
-		pwm_value -= pwm_value > 0 ? 1000 : 0;
+		if (pwm_value - 1000 < 0) {
+			reverse_mode = 1;
+		}
+		if ( reverse_mode ){
+			pwm_value += pwm_value < 20000 ? 1000 : 0;
+		}
+		else {
+			pwm_value -= pwm_value > 0 ? 1000 : 0;
+		}
 	}
-	RTIM_CCRxSet(TIMx[8], left_pwm, 0);
-	RTIM_CCRxSet(TIMx[8], right_pwm, 1);
+	printf("reverse_mode: %d\r\n", reverse_mode);
+
+
+	if (reverse_mode) {
+		RTIM_CCRxSet(TIMx[8], left_pwm, 0);
+		RTIM_CCRxSet(TIMx[8], 0, 1);
+		RTIM_CCRxSet(TIMx[8], right_pwm, 2);
+		RTIM_CCRxSet(TIMx[8], 0, 3);
+	} else {
+		RTIM_CCRxSet(TIMx[8], 0, 0);
+		RTIM_CCRxSet(TIMx[8], left_pwm, 1);
+		RTIM_CCRxSet(TIMx[8], 0, 2);
+		RTIM_CCRxSet(TIMx[8], right_pwm, 3);
+	}
 
 	printf("pwm_value: %d\r\n", pwm_value);
 

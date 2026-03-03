@@ -222,14 +222,16 @@ void raw_pwm_demo(void)
 	RTIM_InitStruct.TIM_Period = PWM_PERIOD - 1;
 	RTIM_TimeBaseInit(TIMx[PWM_TIMER], (&RTIM_InitStruct), TIMx_irq[PWM_TIMER], NULL, NULL);
 
-	for (int i = 0; i < 2; i++) {
+	for (int i = 0; i < 4; i++) {
 		RTIM_CCStructInit(&TIM_CCInitStruct);
 		TIM_CCInitStruct.TIM_OCPulse = pwms[i];
 		RTIM_CCxInit(TIMx[PWM_TIMER], &TIM_CCInitStruct, i);
 		RTIM_CCxCmd(TIMx[PWM_TIMER], i, TIM_CCx_Enable);
 	}
 	Pinmux_Config(_PB_18, (PINMUX_FUNCTION_PWM0 + 0));
-	Pinmux_Config(_PB_10, (PINMUX_FUNCTION_PWM0 + 1));
+	Pinmux_Config(_PB_19, (PINMUX_FUNCTION_PWM0 + 1));
+	Pinmux_Config(_PB_10, (PINMUX_FUNCTION_PWM0 + 2));
+	Pinmux_Config(_PB_16, (PINMUX_FUNCTION_PWM0 + 3));
 
 	RTIM_Cmd(TIMx[PWM_TIMER], ENABLE);
 }
