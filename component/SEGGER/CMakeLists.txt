@@ -44,7 +44,6 @@ set(private_compile_options)         #private compile_options
 ameba_list_append(private_sources
     SEGGER_RTT.c 
     SEGGER_RTT_printf.c
-    SEGGER_RTT_ASM_ARMv7M.S
     SEGGER_SYSVIEW.c
     Config/SEGGER_SYSVIEW_Config_FreeRTOS.c
     SEGGER_SYSVIEW_FreeRTOS.c
