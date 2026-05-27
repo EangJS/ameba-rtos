@@ -25,3 +25,6 @@
 	path = component/application/speechmind
 	url = https://github.com/Ameba-AIoT/speechmind.git
 	branch = master
+[submodule "component/SEGGER/RTT"]
+	path = component/SEGGER/RTT
+	url = https://github.com/SEGGERMicro/RTT.git

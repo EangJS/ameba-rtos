@@ -15,6 +15,7 @@
 #include "rtw_coex_ipc.h"
 #endif
 #include "ameba_diagnose.h"
+#include "SEGGER_RTT.h"
 
 static const char *const TAG = "MAIN";
 
@@ -170,6 +171,19 @@ _WEAK void app_example(void)
 
 }
 
+void task_main(void *param)
+{
+	UNUSED(param);
+	uint32_t counter = 0;
+	while (1) {
+		SEGGER_RTT_printf(0, "%d: CH0: Hello World! From KM4\n", counter++);
+		SEGGER_RTT_SetTerminal(1);
+		SEGGER_RTT_printf(0, "%d: CH1: Hello World! From KM4\n", counter++);
+		SEGGER_RTT_SetTerminal(0);
+		rtos_time_delay_ms(1000);
+	}
+}
+
 //default main
 int main(void)
 {
@@ -231,6 +245,7 @@ int main(void)
 	IPC_patch_function(&rtos_critical_enter, &rtos_critical_exit);
 	IPC_SEMDelay(DelayMs);
 
+	rtos_task_create(NULL, ((const char *)"task_main"), (rtos_task_t)task_main, NULL, 1024, 5);
 
 	RTK_LOGI(TAG, "KM4 START SCHEDULER \n");
 

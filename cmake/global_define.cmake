@@ -59,6 +59,8 @@ ameba_set(c_CMPT_PYTEST_DIR       ${c_COMPONENT_DIR}/utils/pytest)
 ameba_set(c_CMPT_TFLITE_DIR       ${c_COMPONENT_DIR}/tflite_micro)
 ameba_set(c_CMPT_WIFI_DIR         ${c_COMPONENT_DIR}/wifi)
 ameba_set(c_CMPT_WPAN_DIR         ${c_COMPONENT_DIR}/wpan)
+ameba_set(c_CMPT_SEGGER_DIR       ${c_COMPONENT_DIR}/SEGGER)
+ameba_set(c_CMPT_RTT_DIR          ${c_COMPONENT_DIR}/SEGGER/RTT)
 
 ameba_set(c_CMPT_CRASHDUMP_DIR    ${c_COMPONENT_DIR}/soc/common/crashdump)
 ameba_set(c_CMPT_LZMA_DIR         ${c_COMPONENT_DIR}/soc/common/lzma)
